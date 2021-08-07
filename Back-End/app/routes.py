@@ -123,6 +123,8 @@ def get_real_time_device_reading():
 def get_last_reading_stored(device_id):
     last_reading_stored = Device_Reading.query.filter_by(device_id=device_id).order_by(desc(Device_Reading.reading_time)).limit(1).first()
     return last_reading_stored
+    #Call the web service running in 76.121.95.15:5000/get_device_reading
+    #Store that value to the db
 
 
 def check_status(response):
