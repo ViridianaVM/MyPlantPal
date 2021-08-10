@@ -1,0 +1,15 @@
+#This file should be created under /etc/systemd/system path
+[Unit]
+Description=Flask Run
+After=network.target
+
+[Service]
+Type=idle
+WorkingDirectory=/var/www/myraspberryplant/
+Environment=FLASK_APP=app
+Environment=FLASK_ENV=development
+ExecStart=bash /usr/bin/MyScripts/FlaskStart.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

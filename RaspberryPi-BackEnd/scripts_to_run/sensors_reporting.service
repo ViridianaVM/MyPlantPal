@@ -1,0 +1,12 @@
+#This file should be created under /etc/systemd/system path
+[Unit]
+Description=Sensors Reporting
+After=network.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /usr/bin/MyScripts/send_info_to_db.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
