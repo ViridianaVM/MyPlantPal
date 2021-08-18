@@ -30,16 +30,9 @@ const PlantStatusIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'GetPlantStatusIntent';
     },
     async handle(handlerInput) {
-        const res = await fetch('https://board-inspo-app.herokuapp.com/boards/1')
+        const res = await fetch('http://52.233.91.25:5000/device_readings/my-plant-pal-001/')
         const resJson = await res.json();
-        const myResponse = resJson.owner;
-        let speakOutput = '';
-        if (myResponse === 'Viri Vazquez'){
-            speakOutput = 'Your plant is doing great. No need for more water.';
-        }
-        else {
-            speakOutput = 'Your plant needs more love. Which means, more water.';
-        }
+        const speakOutput = resJson.Status;
         return handlerInput.responseBuilder
             .speak(speakOutput)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
