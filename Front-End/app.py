@@ -7,7 +7,6 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24).hex()
-api_url = "http://52.233.91.25:5000/device_readings/"
 
 @app.route('/')
 def home():
@@ -39,7 +38,7 @@ def dashboard(device_id, place):
     light_readings=[]
     temperature_readings=[]
     dates_readings=[]
-    database_response = requests.get(api_url+device_id+"/plots")
+    database_response = requests.get("AZURE_READING_URL"+device_id+"/plots")
     sensors_readings = database_response.json()
     # print("ESTOY IMPRIMIENDO MIS DATOS: ", database_response.json())
     for reading in sensors_readings:
