@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/dashboard.css" media="screen">
+    <link rel="stylesheet" href="/static/index.css" media="screen">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet"> -->
+    
+</head>
+<body>
+
+<div class="plant-name">
+    <h1 class="main-title">{{place_name}} Plant</h1>
+</div>
+
+<h1 class="title"> Moisture </h1>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="moisture_data"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h1 class="title"> Temperature </h1>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="temperature_data"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h1 class="title"> Light </h1>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="light_data"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.0/chart.min.js" integrity="sha512-asxKqQghC1oBShyhiBwA+YgotaSYKxGP1rcSYTDrB0U6DxwlJjU59B67U8+5/++uFjcuVM8Hh5cokLjZlhm3Vg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<!--suppress JSUnresolvedLibraryURL -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script> -->
+<!--suppress JSUnresolvedLibraryURL -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+<script>
+    let dates = JSON.parse({{ dates | tojson }});
+    let moisture_readings = JSON.parse({{ moisture_data | tojson }});
+    // if (moisture_readings.lenght >== 6){
+    //     moisture_readings = moisture_readings.slice(moisture_readings.lenght-6, moisture_readings.lenght);
+    // };
+    new Chart(document.getElementById("moisture_data"), {
+                type: "line",
+                data:
+                {
+                    labels: dates,
+                    datasets: [{
+                        label: "Moisture Readings Over Time",
+                        data: moisture_readings,
+                        fill: true,
+                        backgroundColor: "rgba(255,0,0,.3)",
+                        borderColor: "#e2505e",
+                        lineTension: 0.1,
+                        borderWidth: 7,
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: false
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                            return tooltipItem.yLabel;
+                            },
+                        },
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                fontSize: 20
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 20
+                            }
+                        }]
+                    }
+                }
+            });
+    
+    // let dates = JSON.parse({{ dates | tojson }});
+    let temperature_readings = JSON.parse({{ temperature_data | tojson }});
+    new Chart(document.getElementById("temperature_data"), {
+                type: "line",
+                data:
+                {
+                    labels: dates,
+                    datasets: [{
+                        label: "Temperature Readings Over Time",
+                        data: temperature_readings,
+                        fill: true,
+                        backgroundColor: "rgba(255,140,0,.3)",
+                        borderColor: "#f88c32",
+                        lineTension: 0.1,
+                        borderWidth: 7,
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: false
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                            return tooltipItem.yLabel + ' C';
+                            },
+                        },
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                fontSize: 20
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 20
+                            }
+                        }]
+                    }
+                }
+            });
+    
+    let light_readings = JSON.parse({{ light_data | tojson }});
+    new Chart(document.getElementById("light_data"), {
+                type: "line",
+                data:
+                {
+                    labels: dates,
+                    datasets: [{
+                        label: "Light Readings Over Time",
+                        data: light_readings,
+                        fill: true,
+                        backgroundColor: "rgba(0,191,255,.3)",
+                        borderColor: "#58cddf",
+                        lineTension: 0.2,
+                        borderWidth: 7,
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: false
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                            return tooltipItem.yLabel;
+                            },
+                        },
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                fontSize: 20
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 20
+                            }
+                        }]
+                    }
+                }
+            });
+
+</script>
+
+<div class="button_container">
+    <a class="button" href="/">home</a>
+</div>
+</body>
+
+</html>

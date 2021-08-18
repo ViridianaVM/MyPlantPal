@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html style="font-size: 16px;">
+  <head>
+    <title>My Plant Pal</title>
+    <link rel="stylesheet" href="static/nicepage.css" media="screen">
+    <link rel="stylesheet" href="static/login.css" media="screen">
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
+    
+    
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": ""
+}</script>
+
+  </head>
+  <body class="u-body">
+    <section class="u-align-right u-clearfix u-image u-section-1" id="carousel_8a98" data-image-width="1125" data-image-height="750">
+      <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-valign-middle-xl u-sheet-1">
+        <div class="u-align-right u-border-10 u-border-white u-container-style u-expanded-width-xs u-group u-opacity u-opacity-25 u-white u-group-1">
+          <div class="u-container-layout u-valign-middle u-container-layout-1">
+            <h3 class="u-text u-text-body-alt-color u-text-1">
+              My Plant Pal
+            </h3>
+            <div class="app-title">
+              <p>Login!</p>
+            </div>
+            {% if error %}
+            <p class="error_password"><strong>Error:</strong> {{ error }}
+            {% endif %}
+            <form action="/login" method="POST">
+              <div class="login-form">
+                <div class="control-group">
+                  <input type="text" class="login-field" value="" placeholder="username" name="username">
+                  <label class="login-field-icon fui-user" for="login-name"></label>
+                </div>
+                <div class="control-group">
+                  <input type="password" class="login-field" value="" placeholder="password" name="password">
+                  <label class="login-field-icon fui-lock" for="login-pass"></label>
+                </div>
+                  <input type="submit" value="Sign in" class="btn btn-primary btn-large btn-block">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section> 
+    <section class="u-backlink u-clearfix u-grey-80">
+      <p class="u-text">
+        <span>ViriVM 2021</span>
+      </p> 
+    </section>
+  </body>
+  
+</html>
