@@ -1,13 +1,14 @@
 
 from datetime import datetime
 from datetime import timedelta
-from sqlalchemy import desc
+from sqlalchemy import desc, text
 from flask import Blueprint, request, jsonify, make_response
 from app import db
 from dotenv import load_dotenv
 from .models.user_device import User_Device
 from .models.device_reading import Device_Reading
 import random
+import requests
 
 
 user_device_bp = Blueprint("users_devices", __name__, url_prefix="/user_devices")
@@ -88,6 +89,37 @@ def get_all_device_readings(device_id):
         return make_response({"error": "incorrect device_id or no readings for this device"}, 400)
 
 
+@device_reading_bp.route("/<string:device_id>/last", methods=["GET"])
+def get_last_device_reading(device_id):
+    last_device_reading = Device_Reading.query.filter_by(device_id=device_id).order_by(desc(Device_Reading.reading_time)).limit(1).first()
+    if last_device_reading:
+        return make_response(last_device_reading.to_json(), 200)
+    else:
+        return make_response({"error": "incorrect device_id or no readings for this device"}, 400)
+
+
+@device_reading_bp.route("/<string:device_id>/plots", methods=["GET"])
+def get_device_readings_to_plot(device_id):
+    #Execute raw SQL query
+    sql = text(f"SELECT AVG(moisture_sensor), AVG(temperature_sensor), AVG(light_sensor), DATE_FORMAT(reading_time,'%M %d %Y') as 'simple_reading_time' FROM myplantpaldb.device_readings WHERE device_id='{device_id}' GROUP BY simple_reading_time")
+    device_reading_list = db.engine.execute(sql)
+    device_reading_list_objects = [device_reading for device_reading in device_reading_list]
+    device_reading_list_in_json = []
+    for reading in device_reading_list_objects:
+        reading_data = {
+            "moisture_sensor": float(reading[0]),
+            "temperature_sensor": float(reading[1]),
+            "light_sensor": float(reading[2]),
+            "reading_time": str(reading[3])
+        }
+        device_reading_list_in_json.append(reading_data)
+    if device_reading_list_in_json:
+        return jsonify(device_reading_list_in_json), 200
+    else:
+        return make_response({"error": "incorrect device_id or no readings for this device"}, 400)
+
+
+
 @device_reading_bp.route("/<string:device_id>", methods=["GET"])
 def get_status_of_my_plant(device_id):
     last_device_reading = get_reading_from_last_twentyfour_hours(device_id)
@@ -97,7 +129,7 @@ def get_status_of_my_plant(device_id):
         #TODO: Call the raspberry pi to access real time data
         real_time_reading = get_real_time_device_reading()
         if real_time_reading:
-            return check_status(jsonify(real_time_reading))
+            return check_status(real_time_reading)
         else:
             # If the device cannot be reached, then get the last record from the database
             last_reading_stored =  get_last_reading_stored(device_id)
@@ -117,7 +149,10 @@ def get_reading_from_last_twentyfour_hours(device_id):
 
 
 def get_real_time_device_reading():
-    return ""
+    raspberryplant_api_url = "RASPBERRY_READING_URL"
+    response = requests.get(raspberryplant_api_url)
+    real_time_reading = response.json()
+    return real_time_reading
 
 
 def get_last_reading_stored(device_id):
@@ -126,17 +161,17 @@ def get_last_reading_stored(device_id):
 
 
 def check_status(response):
-    if int(response["moisture_sensor"]) < 30:
-        return make_response({"Status": "Your plant needs more water and love"}, 200)
-    elif int(response["moisture_sensor"]) > 50:
+    if int(response["moisture_sensor"]) < 1500:
         return make_response({"Status": "No more water for your plant. You will drown it."}, 200)
-    elif int(response["temperature_sensor"]) < 65:
+    elif int(response["moisture_sensor"]) > 1900:
+        return make_response({"Status": "Your plant needs more water and love"}, 200)
+    elif int(response["temperature_sensor"]) < 18:
         return make_response({"Status": "Your plant needs to feel cozy. Move it to a warmer place"}, 200)
-    elif int(response["temperature_sensor"]) > 80:
+    elif int(response["temperature_sensor"]) > 28:
         return make_response({"Status": "With this high temperature, it will not grow. Move it to a cooler place"}, 200)
     elif int(response["light_sensor"]) < 100:
         return make_response({"Status": "This beauty needs more light"}, 200)
-    elif int(response["light_sensor"]) > 250:
+    elif int(response["light_sensor"]) > 290:
         return make_response({"Status": "Too much light! Some shade would be great"}, 200)
     else:
         return make_response(ok_status_responses(), 200)
